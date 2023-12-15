@@ -78,7 +78,7 @@ if ($status == false) {
 
     <!-- JSの読み込み -->
     <script src="./js/jquery-2.1.3.min.js"></script>
-    <script src="./js/index.js"></script>
+    <script src="./js/script_book.js"></script>
 </body>
 
 </html>
