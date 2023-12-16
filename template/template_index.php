@@ -27,6 +27,8 @@ $stmt_dog_ear = $pdo_dog_ear->prepare(
 $status_dog_ear = $stmt_dog_ear->execute();
 
 // 4. データ表示
+$bookName = "";
+$bookUrl = "";
 $bookMemo = "";
 $createdDateBooks = "";
 $updateDateBooks = "";
@@ -35,6 +37,8 @@ if ($status_books == false) {
     exit("ErrorQuery:" . $error[2]);
 } else {
     while ($resultBooks = $stmt_books->fetch(PDO::FETCH_ASSOC)) {
+        $bookName = $resultBooks['name'];
+        $bookUrl = $resultBooks['url'];
         $bookMemo = $resultBooks['content'];
         $createdDateBooks = $resultBooks['created_date'];
         $updateDateBooks = $resultBooks['update_date'];
@@ -85,21 +89,21 @@ if ($status_dog_ear == false) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テスト1</title>
+    <title><?= h($bookName) ?></title>
     <link rel="stylesheet" href="../../css/reset.css">
     <link rel="stylesheet" href="../../css/style_dog_ear.css">
 </head>
 
 <body>
     <header>
-        <h1>書籍名</h1>
+        <h1><?= h($bookName) ?></h1>
         <div id="book_cover_box"><img src="<?= h($img_path) ?>" alt=""></div>
-        <a href=>外部リンク</a>
+        <a href='<?= h($bookUrl) ?>'>外部リンク</a>
         <h2>書籍のメモ</h2>
         <textarea id="book_memo" name="book_memo" data-book_id=<?= h($currentBookId) ?>><?= h($bookMemo) ?></textarea>
         <div id='book_date_info'>
-            <p>登録日： <?= h($createdDate) ?></p>
-            <p>更新日： <?= h($updateDate) ?></p>
+            <p>登録日： <?= h($createdDateBooks) ?></p>
+            <p>更新日： <?= h($updateDateBooks) ?></p>
         </div>
     </header>
 

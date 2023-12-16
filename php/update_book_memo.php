@@ -12,10 +12,11 @@ $stmt = $pdo->prepare("
     UPDATE
         gs_bm_books
     SET
-        content = :book_memo
+        content = :book_memo,
+        update_date = sysdate()
     WHERE
         id = :id
-    )");
+    ");
 
 // 2-2. バインド変数を定義
 $stmt->bindValue(':book_memo', $_POST["book_memo"], PDO::PARAM_STR);
