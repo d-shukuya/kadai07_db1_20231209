@@ -9,22 +9,28 @@ try {
 // 2．データ登録
 // 2-1. SQL文
 $stmt = $pdo->prepare("
-  INSERT INTO
-    gs_bm_dog_ear(id, book_id, page_number, line_number, content, created_date, update_date)
-  VALUES(
-    NULL, :bookId, '', '', '', sysdate(), sysdate()
-  )");
+    UPDATE
+        gs_bm_books
+    SET
+        content = :book_memo
+    WHERE
+        id = :id
+    )");
 
 // 2-2. バインド変数を定義
-$stmt->bindValue(':bookId', (int)$_POST["book_id"], PDO::PARAM_INT);
+$stmt->bindValue(':book_memo', $_POST["book_memo"], PDO::PARAM_STR);
+$stmt->bindValue(':id', $_POST["book_id"], PDO::PARAM_INT);
 
 // 2-3. 登録
 $status = $stmt->execute();
 
 // 3. 登録後の処理
+// 3-1. 失敗時の処理
 if ($status == false) {
     $error = $stmt->errorInfo();
     exit('ErrorMessage:' . $error[2]);
-} else {
-    header("Location: ./" . $_POST["book_id"]);
 }
+
+// 3-2. 成功時の処理
+$id12 = str_pad($_POST["book_id"], 12, "0", STR_PAD_LEFT);
+header("Location: ../books/$id12/");

@@ -1,7 +1,4 @@
 <?php
-// 0. 変数定義
-$currentBookId = "000000000001";
-
 // 1. funcs.php を呼び出す
 include("../../funcs.php");
 

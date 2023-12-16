@@ -16,31 +16,35 @@ $stmt = $pdo->prepare("
 $status = $stmt->execute();
 
 // 4. データ表示
+$files = glob('./book_cover.*');
+$img_path = (count($files) > 0) ? $files[0] : '../sample_cover.png';
+
 $view = "";
 if ($status == false) {
     $error = $stmt->errorInfo();
     exit("ErrorQuery:" . $error[2]);
 } else {
-    $i = 1;
     while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $id12 = str_pad($result['id'], 12, "0", STR_PAD_LEFT);
+        $files = glob("./books/$id12/book_cover.*");
+        $coverImgPath = (count($files) > 0) ? $files[0] : './books/sample_cover.png';
+        $createdDate = substr($result['created_date'], 0, 10);
+        $updateDate = substr($result['update_date'], 0, 10);
 
-        // echo "<pre>";
-        // var_dump($result);
-        // echo "</pre>";
-
-        $view .= "<li class='book_item' data-book_id='" . h(str_pad($result['id'], 12, "0", STR_PAD_LEFT)) . "'>";
-        $view .= "<h3>" . $i . "</h3>";
-        $view .=
-            "書籍名：" . h($result['name']) . "<br>"
-            . "リンク：" . "<a href='" . h($result['url']) . "'>" . h($result['url']) . "</a><br>"
-            . "登録日：" . h($result['created_date']);
+        $view .= "<li class='book_item' data-book_id='" . h($id12) . "'>";
+        $view .=    "<h3>" . h($result['name']) . "</h3>";
+        $view .=    "<div class='book_cover'><img src='" . $coverImgPath . "'></div>";
+        if (!is_null($result['url']) && $result['url'] != "") {
+            $view .= "<a href='" . h($result['url']) . "'>外部リンク</a>";
+        };
+        $view .=    "<div class='date_info'>";
+        $view .=        "<p>登録日： " . h($createdDate) . "</p>";
+        $view .=        "<p?>更新日： " . h($updateDate) . "</p>";
+        $view .=    "</div>";
         $view .= "</li>";
-
-        $i++;
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -48,34 +52,36 @@ if ($status == false) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DogEarApp</title>
+    <title>DogEarApp.</title>
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/style_book.css">
 </head>
 
 <body>
     <header>
-        <h1>DogEarApp</h1>
+        <img src="./logo.png" alt="">
+        <h1>DogEarApp.</h1>
     </header>
 
     <nav>
-        <form action="./insert_book.php" method="post">
-            <div>
-                <fieldset>
-                    <legend>書籍の登録</legend>
-                    <label>書籍名：<input type="text" name="name"></label>
-                    <label>リンク：<input type="text" name="url"></label>
-                    <!-- <label><textArea name="content" rows="4" cols="40"></textArea></label><br> -->
-                    <input type="submit" value="登録">
-                </fieldset>
-            </div>
+        <form action="./insert_book.php" method="post" enctype="multipart/form-data">
+            <fieldset>
+                <div id="register_book_box">
+                    <h2>書籍の登録</h2>
+                    <p id="book_name_label" class="label_fmt">書籍名：</p>
+                    <div id="book_name" class="textbox_fmt"><input class="input_textbox" type="text" name="name" required></div>
+                    <p id="book_url_label" class="label_fmt">リンク：</p>
+                    <div id="book_url" class="textbox_fmt"><input class="input_textbox" type="text" name="url"></div>
+                    <div id="book_cover_box"><img id="book_cover_img" src="./input_img.png" alt=""></div>
+                    <input type="file" id="img_upload" accept="image/*" name="book_cover_img">
+                    <div id="book_register_btn"><input class="button" type="submit" value="登録"></div>
+                </div>
+            </fieldset>
         </form>
     </nav>
 
     <main>
-        <ul id="book_list">
-            <?= $view ?>
-        </ul>
+        <ul id="book_list"><?= $view ?></ul>
     </main>
 
     <!-- JSの読み込み -->
